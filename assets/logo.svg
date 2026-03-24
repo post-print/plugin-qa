@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+	<title>PostPrint logo</title>
+	<!-- Paper stack - matches theme icon.svg brand colors -->
+	<g transform="translate(10, 0)">
+		<!-- Bottom paper -->
+		<g transform="translate(40, 68) rotate(-15) translate(-64, -64)">
+			<rect x="34" y="24" width="60" height="80" rx="4" fill="#105890" stroke="white" stroke-width="8" />
+			<path d="M49 38h15c9 0 16 6 16 14s-7 14-16 14H59v16h-10V38zm10 20h5c4 0 7-2.5 7-6s-3-6-7-6H59v12z" fill="white" opacity="0.7" />
+		</g>
+		<!-- Top paper -->
+		<g>
+			<rect x="34" y="24" width="60" height="80" rx="4" fill="#105890" stroke="white" stroke-width="8" />
+			<path d="M49 38h15c9 0 16 6 16 14s-7 14-16 14H59v16h-10V38zm10 20h5c4 0 7-2.5 7-6s-3-6-7-6H59v12z" fill="white" />
+		</g>
+	</g>
+</svg>

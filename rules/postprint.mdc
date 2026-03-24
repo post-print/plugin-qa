@@ -1,0 +1,10 @@
+---
+description: PostPrint product context when using MCP or discussing papers, projects, and citations
+alwaysApply: false
+---
+
+PostPrint is a research workspace: organizations, projects, folders, and a personal saved library. Papers are **sources** with external ids (DOI, arXiv, OpenAlex, etc.) and optional project links.
+
+When integrating with PostPrint via MCP: use the **postprint** server tools by name; authenticate with OAuth when the client prompts. **project_id** and **organization_id** accept uuid or slug. Do not invent source or project ids—resolve with list/search tools first.
+
+Bibliography output: **get_bibliography** requires exactly one of **source_ids** or **project_id**; style defaults to bibtex if unspecified.
