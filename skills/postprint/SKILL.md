@@ -5,7 +5,7 @@ description: Use PostPrint MCP tools for projects, personal library, literature 
 
 # PostPrint MCP
 
-Enable the **postprint** MCP server and complete OAuth when prompted. All tools act as the signed-in user.
+Enable the PostPrint MCP server for your build (**postprint-dev**, **postprint-qa**, or **postprint**) and complete OAuth when prompted. All tools act as the signed-in user.
 
 ## Identifiers
 

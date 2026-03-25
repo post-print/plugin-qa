@@ -2,7 +2,7 @@
 
 Bundled **skills**, **rules**, **agents**, **hooks** (placeholder), and **MCP** config for the PostPrint Django server at `apps/backend/postprint/mcp/`.
 
-Source lives under `apps/plugin/`. **Built** output is `dist/dev`, `dist/qa`, and `dist/prod` (gitignored). MCP URL is injected from `.env` / `.env.qa` / `.env.production` into [`.mcp.json`](./.mcp.json) (placeholder `${POSTPRINT_MCP_URL}`) at build time.
+Source lives under `apps/plugin/`. **Built** output is `dist/dev`, `dist/qa`, and `dist/prod` (gitignored). At build time, [`.mcp.json`](./.mcp.json) is filled with **`MCP_URL`** / **`POSTPRINT_MCP_URL`** (placeholder `${POSTPRINT_MCP_URL}`) and the MCP server id **`POSTPRINT_MCP_SERVER_NAME`** (placeholder `${POSTPRINT_MCP_SERVER_NAME}`). If the name is unset, defaults are **postprint-dev** (dev), **postprint-qa** (qa), **postprint** (production).
 
 ### Cursor marketplace (name / icon)
 
@@ -112,8 +112,8 @@ dist/*/assets/logo.svg             # build copies from tspackages/theme (manifes
 dist/*/.claude-plugin/marketplace.json   # generated at build (postprint vs postprint-qa)
 ../.cursor-plugin/marketplace.json # monorepo root — Cursor catalog → apps/plugin
 ../.claude-plugin/marketplace.json # monorepo root — Claude catalog → ./apps/plugin
-.env / .env.qa / .env.production   # POSTPRINT_MCP_URL per environment
-.mcp.json                          # placeholder URL → dist/*/.mcp.json (build)
+.env / .env.qa / .env.production   # MCP_URL / POSTPRINT_MCP_URL; optional POSTPRINT_MCP_SERVER_NAME
+.mcp.json                          # placeholders → dist/*/.mcp.json (build)
 .cursor-plugin/plugin.json
 .claude-plugin/plugin.json
 skills/postprint/SKILL.md
