@@ -1,0 +1,16 @@
+{
+  "name": "postprint-qa",
+  "owner": {
+    "name": "PostPrint"
+  },
+  "metadata": {
+    "description": "PostPrint Claude Code plugin (QA / pre-production MCP endpoint)"
+  },
+  "plugins": [
+    {
+      "name": "postprint",
+      "source": "./",
+      "description": "PostPrint research tools — search, cite, and manage academic papers from your editor"
+    }
+  ]
+}

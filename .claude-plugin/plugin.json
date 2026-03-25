@@ -1,0 +1,8 @@
+{
+  "name": "postprint",
+  "version": "0.1.0",
+  "description": "PostPrint research tools — search, cite, and manage academic papers from your editor",
+  "author": {
+    "name": "PostPrint"
+  }
+}
