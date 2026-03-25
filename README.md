@@ -2,7 +2,7 @@
 
 Bundled **skills**, **rules**, **agents**, **hooks** (placeholder), and **MCP** config for the PostPrint Django server at `apps/backend/postprint/mcp/`.
 
-Source lives under `apps/plugin/`. **Built** output is `dist/dev`, `dist/qa`, and `dist/prod` (gitignored). At build time, [`.mcp.json`](./.mcp.json) is filled with **`MCP_URL`** / **`POSTPRINT_MCP_URL`** (placeholder `${POSTPRINT_MCP_URL}`) and the MCP server id **`POSTPRINT_MCP_SERVER_NAME`** (placeholder `${POSTPRINT_MCP_SERVER_NAME}`). If the name is unset, defaults are **postprint-dev** (dev), **postprint-qa** (qa), **postprint** (production).
+Source lives under `apps/plugin/`. **Built** output is `dist/dev`, `dist/qa`, and `dist/prod` (gitignored). Each build sets the **plugin id** and default **MCP server id** to **postprint-dev** / **postprint-qa** / **postprint** (dev / QA / prod). The Cursor manifest includes **`displayName`** **PostPrint Dev** / **PostPrint QA** / **PostPrint** (same pattern as plugins such as Figma in the Cursor plugin cache). [`.mcp.json`](./.mcp.json) is a **valid dev MCP config** (so IDEs parse the repo). **`bun run build`** writes **`dist/*/.mcp.json`** from **`.env`**. **`bun run dev`** can patch repo-root **`.mcp.json`** from **`.env`** when **`MCP_URL`** / **`POSTPRINT_MCP_URL`** is set (optional **`POSTPRINT_MCP_SERVER_NAME`**).
 
 ### Cursor marketplace (name / icon)
 
@@ -12,7 +12,7 @@ For **[`{org}/plugin`](./DISTRIBUTION.md)** and **`{org}/plugin-qa`**, the publi
 
 ### Claude Code (marketplace)
 
-Claude Code expects **`.claude-plugin/marketplace.json` at the repository root** of whatever you pass to `/plugin marketplace add` ([marketplace docs](https://code.claude.com/docs/en/plugin-marketplaces)). This monorepo adds **[`.claude-plugin/marketplace.json`](../../.claude-plugin/marketplace.json)** so the same git URL can register the catalog; the plugin files are under `apps/plugin`. Distribution builds **generate** `.claude-plugin/marketplace.json` into `dist/*` so **`plugin`** and **`plugin-qa`** each expose a catalog (marketplace ids **`postprint`** vs **`postprint-qa`** so you can add both).
+Claude Code expects **`.claude-plugin/marketplace.json` at the repository root** of whatever you pass to `/plugin marketplace add` ([marketplace docs](https://code.claude.com/docs/en/plugin-marketplaces)). This monorepo adds **[`.claude-plugin/marketplace.json`](../../.claude-plugin/marketplace.json)** so the same git URL can register the catalog; the plugin files are under `apps/plugin`. Distribution builds **generate** `.claude-plugin/marketplace.json` into `dist/*` with catalog id matching the plugin id (**`postprint`** on prod, **`postprint-qa`** on QA, **`postprint-dev`** on dev) so you can add prod and QA catalogs side by side.
 
 In Claude Code, replace `YOUR_ORG` with your GitHub org (see [DISTRIBUTION.md](./DISTRIBUTION.md)).
 
@@ -28,7 +28,7 @@ In Claude Code, replace `YOUR_ORG` with your GitHub org (see [DISTRIBUTION.md](.
 
 ```
 /plugin marketplace add YOUR_ORG/plugin-qa
-/plugin install postprint@postprint-qa
+/plugin install postprint-qa@postprint-qa
 /reload-plugins
 ```
 
@@ -36,7 +36,7 @@ In Claude Code, replace `YOUR_ORG` with your GitHub org (see [DISTRIBUTION.md](.
 
 ```
 /plugin marketplace add YOUR_ORG/applications
-/plugin install postprint@postprint-apps
+/plugin install postprint-dev@postprint-apps
 /reload-plugins
 ```
 
@@ -47,13 +47,13 @@ claude plugin marketplace add YOUR_ORG/plugin
 claude plugin install postprint@postprint
 
 claude plugin marketplace add YOUR_ORG/plugin-qa
-claude plugin install postprint@postprint-qa
+claude plugin install postprint-qa@postprint-qa
 
 claude plugin marketplace add YOUR_ORG/applications
-claude plugin install postprint@postprint-apps
+claude plugin install postprint-dev@postprint-apps
 ```
 
-Refresh listings after upstream changes: `/plugin marketplace update postprint` (or `postprint-qa` / `postprint-apps`). Remove a catalog: `/plugin marketplace remove <name>`.
+Refresh listings after upstream changes: `/plugin marketplace update postprint`, `postprint-qa`, or `postprint-apps`. Remove a catalog: `/plugin marketplace remove <name>`.
 
 ## Local development
 
@@ -68,12 +68,16 @@ bun run build:qa
 From monorepo root:
 
 ```bash
-bun run dev:plugin
+bunx nx run plugin:dev
 ```
 
-This builds `dist/dev/`, symlinks `~/.cursor/plugins/local/postprint` → `apps/plugin/dist/dev`, and registers `postprint@local` in `~/.claude/plugins/installed_plugins.json` + `~/.claude/settings.json`.
+This **does not** run `dist/dev` build. It symlinks **`~/.cursor/plugins/local/postprint-dev` → `apps/plugin`** (source tree), runs **`claude plugin marketplace add`** on that path, removes stale **`@local`** plugin keys, and registers **`postprint-dev@postprint-dev`** in `~/.claude/plugins/installed_plugins.json` + `~/.claude/settings.json`. Edits to **skills**, **rules**, **agents**, **hooks**, and manifests apply after **`/reload-plugins`** (Claude) or **Reload Window** (Cursor).
 
-Restart Cursor (or **Developer: Reload Window**) and Claude Code. If rules/skills are missing, enable third-party plugins under **Settings → Features**.
+If **`.env`** defines **`MCP_URL`** or **`POSTPRINT_MCP_URL`**, the script rewrites repo-root **`.mcp.json`** from env (optional **`POSTPRINT_MCP_SERVER_NAME`**; default **`postprint-dev`**). With no URL in env, **`.mcp.json`** is left as committed.
+
+If **`url.https://github.com/.insteadOf`** is unset globally, the script sets it to **`git@github.com:`** so Claude can clone GitHub-based marketplaces over HTTPS. It does not override an existing value.
+
+Use **`bun run build`** / **`bun run build:dev`** when you need **`dist/dev`** (e.g. distribution or a clean artifact).
 
 **Workspace MCP:** [`.cursor/mcp.json`](../../.cursor/mcp.json) in this repo still points at localhost when you open the workspace (separate from the plugin bundle).
 
@@ -108,12 +112,14 @@ Details: [apps/backend/postprint/mcp/README.md](../../backend/postprint/mcp/READ
 ## Layout (source)
 
 ```
-dist/*/assets/logo.svg             # build copies from tspackages/theme (manifest icon in distribution repos)
-dist/*/.claude-plugin/marketplace.json   # generated at build (postprint vs postprint-qa)
+assets/logo.svg                    # Cursor manifest icon (copy of tspackages/theme; symlinked dev uses this)
+.claude-plugin/marketplace.json    # Claude directory marketplace for postprint-dev (symlinked dev; dist overwrites on build)
+dist/*/assets/logo.svg             # build copies from tspackages/theme (distribution)
+dist/*/.claude-plugin/marketplace.json   # generated at build (catalog id = postprint-dev | postprint-qa | postprint)
 ../.cursor-plugin/marketplace.json # monorepo root — Cursor catalog → apps/plugin
 ../.claude-plugin/marketplace.json # monorepo root — Claude catalog → ./apps/plugin
 .env / .env.qa / .env.production   # MCP_URL / POSTPRINT_MCP_URL; optional POSTPRINT_MCP_SERVER_NAME
-.mcp.json                          # placeholders → dist/*/.mcp.json (build)
+.mcp.json                          # dev-default MCP (valid schema); dist/*/.mcp.json from env (build); bun run dev can patch from .env
 .cursor-plugin/plugin.json
 .claude-plugin/plugin.json
 skills/postprint/SKILL.md

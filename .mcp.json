@@ -1,6 +1,7 @@
 {
 	"mcpServers": {
 		"postprint-qa": {
+			"type": "http",
 			"url": "https://api.postprint.dev/mcp/"
 		}
 	}
