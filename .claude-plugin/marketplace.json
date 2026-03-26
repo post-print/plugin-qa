@@ -9,7 +9,6 @@
   "plugins": [
     {
       "name": "postprint-qa",
-      "displayName": "PostPrint QA",
       "source": "./",
       "description": "PostPrint QA — research tools — search, cite, and manage academic papers from your editor"
     }
